@@ -1,52 +1,39 @@
-bool flag;
-bool inline satis(map<char, int>& cnt, map<char, int> imap){
-    for(map<char, int>::iterator ite = cnt.begin(); ite != cnt.end(); ite++){
-        if (cnt[ite->first] > imap[ite->first])
-            return false;
-    }
-    flag = true;
-    return true;
-}
-
 class Solution {
 public:
     string minWindow(string S, string T) {
         // Start typing your C/C++ solution below
         // DO NOT write int main() function
-  	flag = false;
-        map<char, int> cnt;
-        for (int i = 0; i != T.size(); i++)
-            cnt[T[i]]++;
-        map<char, int> imap;
-        int ind1=-1, ind2=-1, len = S.size();
-        
-        int curmin = 10000;
+        map<char, int> cnt, cur;
+        int len1 = S.size(), len2 = T.size(), num = 0, sum = 0;
+        int start = 0, end = len1;
         string result = "";
-        char c;
-
-        while(ind2 < len){
-            ind2++;
-            if (cnt[S[ind2]])
-                imap[S[ind2]]++;
-            else
-                continue;
+        for (int i = 0; i != len2; i++){
+            cnt[T[i]]++;
+        }
+        for (map<char, int>::iterator ite = cnt.begin(); ite != cnt.end(); ite++){
+            if (ite->second)
+                sum++;
+        }
+        int find = 0;
+        
+        for (int j = 0; j != len1; j++){
+            cur[S[j]]++;
+            if (cur[S[j]] == cnt[S[j]]){
+                num++;
                 
-            if ((flag && S[ind2] == c) || (!flag && satis(cnt, imap))){
-                while(ind1 < ind2){
-                    ind1++;
-                    if (!cnt[S[ind1]])
-                        continue;
-                        
-                    if (imap[S[ind1]] > cnt[S[ind1]]){
-                        imap[S[ind1]]--;
-                    }else{
-                        if (curmin > ind2-ind1){
-                            curmin = ind2-ind1;
-                            result = S.substr(ind1, ind2-ind1+1);
+                if (num == sum){
+                    while(true){
+                        find++;
+                        cur[S[find-1]]--;
+                        if (cur[S[find-1]] < cnt[S[find-1]]){
+                            num--;
+                            if (j - find + 1< end - start){
+                                start = find - 1, end = j;
+                                result = S.substr(start, end - start + 1);
+                            }
+                            break;
                         }
-                        imap[S[ind1]]--;
-						c = S[ind1];
-                        break;
+                        
                     }
                 }
             }
